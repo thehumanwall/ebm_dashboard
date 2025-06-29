@@ -1,52 +1,66 @@
-<%= form_with(model: goal, class: "contents") do |form| %>
-  <% if goal.errors.any? %>
-    <div id="error_explanation" class="bg-red-50 text-red-500 px-3 py-2 font-medium rounded-md mt-3">
-      <h2><%= pluralize(goal.errors.count, "error") %> prohibited this goal from being saved:</h2>
+<%= form_with(model: goal, class: "bg-white shadow-md rounded-lg p-8") do |form| %>
+<% if goal.errors.any? %>
+<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6" role="alert">
+  <strong class="font-bold">Error!</strong>
+  <span class="block sm:inline"><%= pluralize(goal.errors.count, "error") %> prohibited this goal from being saved:</span>
+  <ul class="list-disc list-inside mt-2">
+    <% goal.errors.each do |error| %>
+    <li><%= error.full_message %></li>
+    <% end %>
+  </ul>
+</div>
+<% end %>
 
-      <ul class="list-disc ml-6">
-        <% goal.errors.each do |error| %>
-          <li><%= error.full_message %></li>
-        <% end %>
-      </ul>
+<div class="mb-6">
+  <%= form.label :name, class: "block text-gray-700 text-sm font-bold mb-2" %>
+  <%= form.text_field :name, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-200" %>
+</div>
+
+<div class="mb-6">
+  <%= form.label :description, class: "block text-gray-700 text-sm font-bold mb-2" %>
+  <%= form.text_area :description, rows: 4, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-200" %>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+  <div>
+    <%= form.label :goal_type, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.select :goal_type, Goal.goal_types.keys.map { |w| [w.titleize, w] }, { prompt: 'Select Type' }, class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-200" %>
+  </div>
+  <div>
+    <%= form.label :status, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.select :status, Goal.statuses.keys.map { |s| [s.titleize, s] }, {}, class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-200" %>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+  <div>
+    <%= form.label :organization_id, class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.collection_select :organization_id, Organization.order(:name), :id, :name, { prompt: 'Select Organization' }, class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-200" %>
+  </div>
+  <div>
+    <%= form.label :parent_goal_id, "Parent Goal", class: "block text-gray-700 text-sm font-bold mb-2" %>
+    <%= form.collection_select :parent_goal_id, Goal.where.not(id: goal.id).order(:name), :id, :name, { include_blank: 'None' }, class: "shadow border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-200" %>
+  </div>
+</div>
+
+<div class="mb-6">
+  <%= form.label :target_date, class: "block text-gray-700 text-sm font-bold mb-2" %>
+  <%= form.date_field :target_date, class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring focus:ring-blue-200" %>
+</div>
+
+<div class="mb-6">
+  <label class="block text-gray-700 text-sm font-bold mb-2">Key Value Measures</label>
+  <div class="border rounded-md p-4 max-h-60 overflow-y-auto space-y-2">
+    <%= form.collection_check_boxes(:kvm_ids, Kvm.order(:name), :id, :name) do |b| %>
+    <div class="flex items-center">
+      <%= b.check_box(class: 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded') %>
+      <%= b.label(class: 'ml-3 block text-sm text-gray-700') %>
     </div>
-  <% end %>
-
-  <div class="my-5">
-    <%= form.label :name %>
-    <%= form.text_field :name, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": goal.errors[:name].none?, "border-red-400 focus:outline-red-600": goal.errors[:name].any?}] %>
+    <% end %>
   </div>
+</div>
 
-  <div class="my-5">
-    <%= form.label :description %>
-    <%= form.textarea :description, rows: 4, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": goal.errors[:description].none?, "border-red-400 focus:outline-red-600": goal.errors[:description].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :goal_type %>
-    <%= form.text_field :goal_type, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": goal.errors[:goal_type].none?, "border-red-400 focus:outline-red-600": goal.errors[:goal_type].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :status %>
-    <%= form.text_field :status, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": goal.errors[:status].none?, "border-red-400 focus:outline-red-600": goal.errors[:status].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :target_date %>
-    <%= form.date_field :target_date, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": goal.errors[:target_date].none?, "border-red-400 focus:outline-red-600": goal.errors[:target_date].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :organization_id %>
-    <%= form.text_field :organization_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": goal.errors[:organization_id].none?, "border-red-400 focus:outline-red-600": goal.errors[:organization_id].any?}] %>
-  </div>
-
-  <div class="my-5">
-    <%= form.label :parent_id %>
-    <%= form.text_field :parent_id, class: ["block shadow-sm rounded-md border px-3 py-2 mt-2 w-full", {"border-gray-400 focus:outline-blue-600": goal.errors[:parent_id].none?, "border-red-400 focus:outline-red-600": goal.errors[:parent_id].any?}] %>
-  </div>
-
-  <div class="inline">
-    <%= form.submit class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white inline-block font-medium cursor-pointer" %>
-  </div>
+<div class="flex items-center justify-end">
+  <%= form.submit class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline cursor-pointer" %>
+</div>
 <% end %>

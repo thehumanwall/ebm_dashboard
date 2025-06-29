@@ -1,29 +1,42 @@
-<% content_for :title, "Goals" %>
-
-<div class="w-full">
-  <% if notice.present? %>
-    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
-  <% end %>
-
-  <div class="flex justify-between items-center">
-    <h1 class="font-bold text-4xl">Goals</h1>
-    <%= link_to "New goal", new_goal_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+<div class="container mx-auto p-4 md:p-8">
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-3xl font-bold text-gray-800">Goals</h1>
+    <%= link_to "New Goal", new_goal_path, class: "bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out" %>
   </div>
 
-  <div id="goals" class="min-w-full divide-y divide-gray-200 space-y-5">
-    <% if @goals.any? %>
-      <% @goals.each do |goal| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render goal %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", goal, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_goal_path(goal), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", goal, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
-          </div>
-        </div>
-      <% end %>
-    <% else %>
-      <p class="text-center my-10">No goals found.</p>
-    <% end %>
+  <div class="bg-white shadow-md rounded-lg overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm font-light">
+        <thead class="border-b font-medium bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-4">Name</th>
+            <th scope="col" class="px-6 py-4">Type</th>
+            <th scope="col" class="px-6 py-4">Status</th>
+            <th scope="col" class="px-6 py-4">Parent Goal</th>
+            <th scope="col" class="px-6 py-4">Target Date</th>
+            <th scope="col" class="px-6 py-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @goals.each do |goal| %>
+          <tr class="border-b hover:bg-gray-100">
+            <td class="whitespace-nowrap px-6 py-4 font-medium"><%= goal.name %></td>
+            <td class="whitespace-nowrap px-6 py-4"><%= goal.goal_type&.titleize %></td>
+            <td class="whitespace-nowrap px-6 py-4">
+              <span class="inline-block px-2 py-1 text-xs font-semibold rounded-full <%= goal.status == 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800' %>">
+                <%= goal.status&.titleize %>
+              </span>
+            </td>
+            <td class="whitespace-nowrap px-6 py-4 text-gray-600"><%= goal.parent_goal&.name || 'None' %></td>
+            <td class="whitespace-nowrap px-6 py-4 text-gray-600"><%= goal.target_date %></td>
+            <td class="whitespace-nowrap px-6 py-4 text-right font-medium">
+              <%= link_to 'Show', goal, class: "text-blue-600 hover:text-blue-800 mr-4" %>
+              <%= link_to 'Edit', edit_goal_path(goal), class: "text-indigo-600 hover:text-indigo-800" %>
+            </td>
+          </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>

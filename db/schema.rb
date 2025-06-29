@@ -42,11 +42,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_29_004644) do
     t.string "status"
     t.date "target_date"
     t.integer "organization_id", null: false
-    t.integer "parent_id", null: false
+    t.integer "parent_goal_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["organization_id"], name: "index_goals_on_organization_id"
-    t.index ["parent_id"], name: "index_goals_on_parent_id"
+    t.index ["parent_goal_id"], name: "index_goals_on_parent_goal_id"
   end
 
   create_table "kvas", force: :cascade do |t|
@@ -109,6 +109,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_29_004644) do
   add_foreign_key "experiments", "goals"
   add_foreign_key "goal_kvms", "goals"
   add_foreign_key "goal_kvms", "kvms"
+  add_foreign_key "goals", "goals", column: "parent_goal_id"
   add_foreign_key "goals", "organizations"
   add_foreign_key "kvms", "kvas"
   add_foreign_key "kvms", "organizations"

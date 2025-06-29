@@ -17,7 +17,7 @@ class GoalsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create goal" do
     assert_difference("Goal.count") do
-      post goals_url, params: { goal: { description: @goal.description, goal_type: @goal.goal_type, name: @goal.name, organization_id: @goal.organization_id, parent_id: @goal.parent_id, status: @goal.status, target_date: @goal.target_date } }
+      post goals_url, params: { goal: { description: @goal.description, goal_type: @goal.goal_type, name: @goal.name, organization_id: @goal.organization_id, parent_goal_id: @goal.parent_goal_id, status: @goal.status, target_date: @goal.target_date } }
     end
 
     assert_redirected_to goal_url(Goal.last)
@@ -34,7 +34,7 @@ class GoalsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update goal" do
-    patch goal_url(@goal), params: { goal: { description: @goal.description, goal_type: @goal.goal_type, name: @goal.name, organization_id: @goal.organization_id, parent_id: @goal.parent_id, status: @goal.status, target_date: @goal.target_date } }
+    patch goal_url(@goal), params: { goal: { description: @goal.description, goal_type: @goal.goal_type, name: @goal.name, organization_id: @goal.organization_id, parent_goal_id: @goal.parent_goal_id, status: @goal.status, target_date: @goal.target_date } }
     assert_redirected_to goal_url(@goal)
   end
 

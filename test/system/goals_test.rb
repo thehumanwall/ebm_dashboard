@@ -18,7 +18,7 @@ class GoalsTest < ApplicationSystemTestCase
     fill_in "Goal type", with: @goal.goal_type
     fill_in "Name", with: @goal.name
     fill_in "Organization", with: @goal.organization_id
-    fill_in "Parent", with: @goal.parent_id
+    fill_in "Parent", with: @goal.parent_goal_id
     fill_in "Status", with: @goal.status
     fill_in "Target date", with: @goal.target_date
     click_on "Create Goal"
@@ -35,7 +35,7 @@ class GoalsTest < ApplicationSystemTestCase
     fill_in "Goal type", with: @goal.goal_type
     fill_in "Name", with: @goal.name
     fill_in "Organization", with: @goal.organization_id
-    fill_in "Parent", with: @goal.parent_id
+    fill_in "Parent", with: @goal.parent_goal_id
     fill_in "Status", with: @goal.status
     fill_in "Target date", with: @goal.target_date
     click_on "Update Goal"

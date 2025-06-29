@@ -65,6 +65,6 @@ class GoalsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def goal_params
-      params.expect(goal: [ :name, :description, :goal_type, :status, :target_date, :organization_id, :parent_id ])
+      params.expect(goal: [ :name, :description, :goal_type, :status, :target_date, :organization_id, :parent_goal_id ])
     end
 end

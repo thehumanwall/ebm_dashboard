@@ -3,7 +3,7 @@ class Experiment < ApplicationRecord
   has_many :measurements, dependent: :nullify
 
   # To define statuses
-  enum status: {
+  enum :status, {
     planned: "Planned",
     running: "Running",
     completed: "Completed",
