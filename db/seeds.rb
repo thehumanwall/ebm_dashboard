@@ -28,9 +28,9 @@ org2 = Organization.create!(
 
 puts "Creating Users..."
 user1 = User.create!(
-  email_address: "jane.doe@agileinnovators.com",
-  password: "password123",
-  password_confirmation: "password123"
+  email_address: "test@test.com",
+  password: "test",
+  password_confirmation: "test"
 )
 
 user2 = User.create!(
