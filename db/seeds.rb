@@ -1,173 +1,300 @@
 # This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
+# The data can then be loaded with the `bin/rails db:seed` command (or created alongside the database with `db:setup`).
 
-# Add the faker gem to generate random data
-require 'faker'
+# Clear existing data to start fresh
+puts "Clearing existing data..."
+Measurement.destroy_all
+Experiment.destroy_all
+GoalKvm.destroy_all
+Goal.destroy_all
+Kvm.destroy_all
+Kva.destroy_all
+Session.destroy_all
+User.destroy_all
+Organization.destroy_all
 
-# Wrap the seeding process in a transaction for performance
-ActiveRecord::Base.transaction do
-  # Clear existing data to ensure a clean slate, in reverse order of dependency
-  puts "Destroying existing data..."
-  Measurement.destroy_all
-  Experiment.destroy_all
-  GoalKvm.destroy_all
-  Goal.destroy_all
-  Kvm.destroy_all
-  Kva.destroy_all
-  Organization.destroy_all
+puts "Creating Organizations..."
+org1 = Organization.create!(
+  name: "Agile Innovators Inc.",
+  vision_statement: "To be the leading provider of agile transformation solutions.",
+  mission_statement: "To empower organizations to achieve their strategic goals through innovative and agile practices."
+)
 
-  puts "Seeding new data..."
+org2 = Organization.create!(
+  name: "Data-Driven Decisions LLC",
+  vision_statement: "To revolutionize industries through the power of data.",
+  mission_statement: "To provide actionable insights and data-driven strategies that foster growth and efficiency."
+)
 
-  # 1. Organization
-  # Create one main organization for all other data to belong to.
-  main_org = Organization.create!(
-    name: Faker::Company.name,
-    vision_statement: Faker::Company.bs.capitalize + " in order to " + Faker::Company.catch_phrase.downcase + ".",
-    mission_statement: "To leverage " + Faker::Company.buzzword + " methodologies to achieve our vision."
-  )
-  puts "Created Organization: #{main_org.name}"
+puts "Creating Users..."
+user1 = User.create!(
+  email_address: "jane.doe@agileinnovators.com",
+  password: "password123",
+  password_confirmation: "password123"
+)
 
-  # 2. Key Value Areas (KVAs)
-  # This data is specific and comes directly from the EBM guide.
-  puts "Seeding Key Value Areas..."
-  kvas = {}
-  kvas_data = [
-    {
-      name: 'Current Value',
-      description: 'Measures the value that the product delivers to customers and stakeholders at the present time. [cite: 172]'
-    },
-    {
-      name: 'Unrealized Value',
-      description: 'Measures the potential future value that could be realized if the organization met the needs of all potential customers. [cite: 186]'
-    },
-    {
-      name: 'Ability to Innovate',
-      description: 'Measures the effectiveness of an organization in delivering new capabilities and innovative solutions. [cite: 203]'
-    },
-    {
-      name: 'Time-to-Market',
-      description: 'Measures how quickly the organization can deliver and learn from feedback gathered from experiments. [cite: 218]'
-    }
-  ]
+user2 = User.create!(
+  email_address: "john.smith@datadriven.com",
+  password: "password456",
+  password_confirmation: "password456"
+)
 
-  kvas_data.each do |data|
-    kva = Kva.create!(data)
-    kvas[data[:name]] = kva # Store for easy lookup
-  end
-  puts "  - #{Kva.count} KVAs seeded."
+puts "Creating Sessions..."
+Session.create!(
+  user: user1,
+  ip_address: "192.168.1.1",
+  user_agent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+)
 
-  # 3. Key Value Measures (KVMs)
-  # Create a few random KVMs for each KVA based on examples from the guide.
-  puts "Seeding Key Value Measures..."
-  all_kvms = []
-  kvm_examples = {
-    'Current Value' => [ 'Customer Satisfaction', 'Employee Satisfaction', 'Product Cost Ratio' ],
-    'Unrealized Value' => [ 'Market Share Gap', 'Customer Desired Experience Gap', 'Potential Market Size' ],
-    'Ability to Innovate' => [ 'Innovation Rate', 'Defect Trends', 'Technical Debt' ],
-    'Time-to-Market' => [ 'Lead Time for Changes', 'Deployment Frequency', 'Time to Restore Service' ]
-  }
+Session.create!(
+  user: user2,
+  ip_address: "10.0.0.1",
+  user_agent: "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/14.1.1 Safari/605.1.15"
+)
 
-  kvm_examples.each do |kva_name, kvm_names|
-    kvm_names.each do |name|
-      all_kvms << Kvm.create!(
-        name: name,
-        description: Faker::Lorem.sentence(word_count: 10),
-        unit_of_measure: [ 'Days', 'Percentage', 'Count', 'USD' ].sample,
-        is_active: true,
-        organization: main_org,
-        kva: kvas[kva_name]
-      )
-    end
-  end
-  puts "  - #{Kvm.count} KVMs seeded."
 
-  # 4. Goals (Strategic, Intermediate, and Tactical)
-  # Create a hierarchy of goals.
-  puts "Seeding Goals..."
-  strategic_goal = Goal.create!(
-    organization: main_org,
-    name: "Become Market Leader in #{Faker::Commerce.department}",
-    description: "Achieve dominant market share by focusing on customer outcomes and out-innovating competitors.",
-    goal_type: 'strategic',
-    status: 'active',
-    target_date: Faker::Time.forward(days: 730)
-  )
+puts "Creating Key Value Areas (KVAs)..."
+current_value_kva = Kva.create!(name: "Current Value", description: "Measures the value delivered to customers and stakeholders today.")
+time_to_market_kva = Kva.create!(name: "Time-to-Market", description: "Measures the organization's ability to deliver value quickly.")
+ability_to_innovate_kva = Kva.create!(name: "Ability to Innovate", description: "Measures the organization's capacity to develop and introduce new capabilities.")
+unrealized_value_kva = Kva.create!(name: "Unrealized Value", description: "Measures the potential future value that could be realized by meeting customer needs.")
 
-  intermediate_goals = []
-  2.times do
-    intermediate_goals << Goal.create!(
-      organization: main_org,
-      parent_goal: strategic_goal,
-      name: "Launch Next-Gen Product Line: #{Faker::Commerce.product_name}",
-      description: "Successfully complete the development and launch of our next generation platform.",
-      goal_type: 'intermediate',
-      status: 'active',
-      target_date: Faker::Time.forward(days: 365)
-    )
-  end
 
-  tactical_goals = []
-  5.times do
-    tactical_goals << Goal.create!(
-      organization: main_org,
-      parent_goal: intermediate_goals.sample,
-      name: "Improve Onboarding Flow - #{Faker::Verb.base.capitalize}",
-      description: "Reduce customer drop-off during the initial sign-up and setup process.",
-      goal_type: 'immediate_tactical',
-      status: 'active',
-      target_date: Faker::Time.forward(days: 90)
-    )
-  end
-  puts "  - #{Goal.count} Goals seeded (Strategic, Intermediate, and Tactical)."
+puts "Creating Key Value Measures (KVMs)..."
+# KVMs for Agile Innovators Inc.
+kvm1_org1 = Kvm.create!(name: "Customer Satisfaction Score (CSAT)", description: "Measures customer satisfaction with our products/services.", unit_of_measure: "Score (1-10)", is_active: true, organization: org1, kva: current_value_kva)
+kvm2_org1 = Kvm.create!(name: "Lead Time to Deploy", description: "Time from code commit to production deployment.", unit_of_measure: "Days", is_active: true, organization: org1, kva: time_to_market_kva)
+kvm3_org1 = Kvm.create!(name: "Feature Adoption Rate", description: "Percentage of users actively using new features.", unit_of_measure: "Percentage", is_active: true, organization: org1, kva: ability_to_innovate_kva)
 
-  # 5. GoalKvm (Join Table)
-  # Associate random KVMs with each non-strategic goal.
-  puts "Associating KVMs with Goals..."
-  (intermediate_goals + tactical_goals).each do |goal|
-    kvms_to_assign = all_kvms.sample(rand(2..4))
-    goal.kvms = kvms_to_assign
-  end
-  puts "  - KVMs associated."
+# KVMs for Data-Driven Decisions LLC
+kvm1_org2 = Kvm.create!(name: "Net Promoter Score (NPS)", description: "Measures customer loyalty and willingness to recommend.", unit_of_measure: "Score (-100 to 100)", is_active: true, organization: org2, kva: current_value_kva)
+kvm2_org2 = Kvm.create!(name: "Cycle Time", description: "Time taken to complete a work item from start to finish.", unit_of_measure: "Hours", is_active: true, organization: org2, kva: time_to_market_kva)
+kvm3_org2 = Kvm.create!(name: "Market Share Growth", description: "Percentage increase in market share.", unit_of_measure: "Percentage", is_active: true, organization: org2, kva: unrealized_value_kva)
 
-  # 6. Experiments
-  # Create experiments for our tactical goals.
-  puts "Seeding Experiments..."
-  all_experiments = []
-  10.times do
-    all_experiments << Experiment.create!(
-      goal: tactical_goals.sample,
-      name: "A/B Test: #{Faker::Marketing.buzzwords.capitalize}",
-      hypothesis: "We believe that #{Faker::Verb.ing_form} the #{Faker::Hacker.noun} will result in an increase in #{Faker::Hacker.noun} for new users.",
-      actions_taken: "Deployed a new version of the component and routed 50% of traffic to it.",
-      start_date: Faker::Time.backward(days: 14),
-      end_date: Faker::Time.backward(days: 1),
-      status: [ 'completed', 'running' ].sample,
-      inspection_summary: "The data showed a #{rand(5..25)}% lift in the target metric.",
-      adaptation_summary: "We will roll this change out to 100% of users in the next sprint."
-    )
-  end
-  puts "  - #{Experiment.count} Experiments seeded."
+puts "Creating Goals..."
 
-  # 7. Measurements
-  # Create measurements for our KVMs, ensuring each is tied to an experiment.
-  puts "Seeding Measurements..."
-  all_experiments.each do |experiment|
-    # Get the KVMs that are relevant to this experiment's goal
-    relevant_kvms = experiment.goal.kvms
-    next if relevant_kvms.empty? # Skip if the goal has no associated KVMs
+# --- Organization 1: Agile Innovators Inc. ---
 
-    # For each experiment, create 2 to 5 related measurements
-    rand(2..5).times do
-      Measurement.create!(
-        kvm: relevant_kvms.sample, # Pick a random, relevant KVM
-        experiment: experiment,    # Assign the current experiment
-        value: Faker::Number.decimal(l_digits: 2, r_digits: 2),
-        measurement_date: Faker::Time.between(from: experiment.start_date, to: experiment.end_date),
-        notes: "Data point collected during '#{experiment.name}'."
-      )
-    end
-  end
-  puts "  - #{Measurement.count} Measurements seeded."
+# Strategic Goal 1
+sg1_org1 = Goal.create!(
+  name: "Increase Customer Value by 20% in the next fiscal year",
+  description: "Focus on initiatives that directly improve the value we provide to our customers, leading to higher satisfaction and retention.",
+  goal_type: :strategic,
+  status: :active,
+  target_date: Date.today.next_year,
+  organization: org1
+)
 
-  puts "\nSeeding complete!"
-end
+# Intermediate Goal for SG1
+ig1_sg1_org1 = Goal.create!(
+  name: "Enhance Core Product Suite",
+  description: "Improve existing features and add new capabilities to our core products based on customer feedback.",
+  goal_type: :intermediate,
+  status: :active,
+  target_date: Date.today + 6.months,
+  organization: org1,
+  parent_goal: sg1_org1
+)
+
+# Immediate Tactical Goals for IG1
+itg1_ig1_org1 = Goal.create!(
+  name: "Reduce UI Latency by 15%",
+  description: "Optimize frontend and backend performance to provide a faster and more responsive user experience.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 3.months,
+  organization: org1,
+  parent_goal: ig1_sg1_org1
+)
+
+itg2_ig1_org1 = Goal.create!(
+  name: "Implement Top 3 Requested Features",
+  description: "Develop and launch the top three features requested by our power users to increase their engagement.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 3.months,
+  organization: org1,
+  parent_goal: ig1_sg1_org1
+)
+
+# Strategic Goal 2
+sg2_org1 = Goal.create!(
+  name: "Accelerate Innovation Cycles by 30%",
+  description: "Reduce the time it takes to go from idea to market to stay ahead of the competition.",
+  goal_type: :strategic,
+  status: :active,
+  target_date: Date.today.next_year,
+  organization: org1
+)
+
+# Intermediate Goal for SG2
+ig1_sg2_org1 = Goal.create!(
+  name: "Streamline Development Pipeline",
+  description: "Automate and optimize our CI/CD pipeline to enable faster and more frequent deployments.",
+  goal_type: :intermediate,
+  status: :active,
+  target_date: Date.today + 6.months,
+  organization: org1,
+  parent_goal: sg2_org1
+)
+
+# Immediate Tactical Goals for IG1_SG2
+itg1_ig1_sg2_org1 = Goal.create!(
+  name: "Achieve 90% Code Coverage",
+  description: "Increase automated test coverage to improve code quality and reduce manual testing time.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 2.months,
+  organization: org1,
+  parent_goal: ig1_sg2_org1
+)
+
+itg2_ig1_sg2_org1 = Goal.create!(
+  name: "Migrate to Kubernetes",
+  description: "Containerize applications and migrate to a Kubernetes orchestration platform for better scalability and resilience.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 4.months,
+  organization: org1,
+  parent_goal: ig1_sg2_org1
+)
+
+# --- Organization 2: Data-Driven Decisions LLC ---
+
+# Strategic Goal 1
+sg1_org2 = Goal.create!(
+  name: "Become the Market Leader in Predictive Analytics",
+  description: "Capture the largest market share in the predictive analytics space within three years.",
+  goal_type: :strategic,
+  status: :active,
+  target_date: Date.today + 3.years,
+  organization: org2
+)
+
+# Intermediate Goal for SG1
+ig1_sg1_org2 = Goal.create!(
+  name: "Expand into Two New Vertical Markets",
+  description: "Adapt and launch our product for the healthcare and finance sectors.",
+  goal_type: :intermediate,
+  status: :active,
+  target_date: Date.today.next_year,
+  organization: org2,
+  parent_goal: sg1_org2
+)
+
+# Immediate Tactical Goals for IG1
+itg1_ig1_org2 = Goal.create!(
+  name: "Develop HIPAA Compliant Data-Handling Module",
+  description: "Ensure our product meets all regulatory requirements for handling sensitive health information.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 6.months,
+  organization: org2,
+  parent_goal: ig1_sg1_org2
+)
+
+itg2_ig1_org2 = Goal.create!(
+  name: "Launch Targeted Marketing Campaign for Financial Sector",
+  description: "Create and execute a marketing campaign to build brand awareness and generate leads in the financial services industry.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 4.months,
+  organization: org2,
+  parent_goal: ig1_sg1_org2
+)
+
+# Strategic Goal 2
+sg2_org2 = Goal.create!(
+  name: "Improve Operational Efficiency by 25%",
+  description: "Optimize internal processes to reduce costs and improve margins.",
+  goal_type: :strategic,
+  status: :active,
+  target_date: Date.today.next_year,
+  organization: org2
+)
+
+# Intermediate Goal for SG2
+ig1_sg2_org2 = Goal.create!(
+  name: "Automate Customer Onboarding",
+  description: "Reduce manual effort and time required to onboard new customers.",
+  goal_type: :intermediate,
+  status: :active,
+  target_date: Date.today + 9.months,
+  organization: org2,
+  parent_goal: sg2_org2
+)
+
+# Immediate Tactical Goals for IG1_SG2
+itg1_ig1_sg2_org2 = Goal.create!(
+  name: "Implement a Self-Service Setup Wizard",
+  description: "Build a wizard that guides new users through the initial setup and configuration of their account.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 5.months,
+  organization: org2,
+  parent_goal: ig1_sg2_org2
+)
+
+itg2_ig1_sg2_org2 = Goal.create!(
+  name: "Integrate with Major CRM Platforms",
+  description: "Develop integrations with Salesforce and HubSpot to streamline data import for new customers.",
+  goal_type: :immediate_tactical,
+  status: :active,
+  target_date: Date.today + 6.months,
+  organization: org2,
+  parent_goal: ig1_sg2_org2
+)
+
+puts "Linking Goals to KVMs..."
+GoalKvm.create!(goal: itg1_ig1_org1, kvm: kvm2_org1) # Reduce UI Latency -> Lead Time to Deploy
+GoalKvm.create!(goal: itg2_ig1_org1, kvm: kvm3_org1) # Implement Features -> Feature Adoption Rate
+GoalKvm.create!(goal: itg1_ig1_org2, kvm: kvm3_org2) # Develop HIPAA Module -> Market Share Growth
+GoalKvm.create!(goal: itg2_ig1_sg2_org2, kvm: kvm2_org2) # Integrate with CRM -> Cycle Time
+GoalKvm.create!(goal: sg1_org1, kvm: kvm1_org1) # Increase Customer Value -> CSAT
+
+puts "Creating Experiments..."
+# Experiment for Agile Innovators Inc. - "Reduce UI Latency" Goal
+exp1 = Experiment.create!(
+  name: "Frontend Asset Caching Strategy",
+  hypothesis: "By implementing aggressive browser and CDN caching for our static assets, we can reduce page load times by 10% and improve UI responsiveness, thus decreasing UI latency.",
+  actions_taken: "Configured Cloudflare CDN with new caching rules. Updated webpack to include content hashes in filenames.",
+  start_date: DateTime.now - 7.days,
+  end_date: DateTime.now + 23.days,
+  status: :running,
+  inspection_summary: "Initial measurements show a 5% improvement in load times. More data needed.",
+  adaptation_summary: "Plan to tweak CDN settings next week to cache HTML content for short periods.",
+  goal: itg1_ig1_org1
+)
+
+# Experiment for Agile Innovators Inc. - "Implement Top 3 Requested Features" Goal
+exp2 = Experiment.create!(
+  name: "A/B Test New Dashboard Widget",
+  hypothesis: "Introducing a new 'Quick Actions' widget on the main dashboard for a segment of users will lead to a 15% increase in feature adoption for those actions.",
+  actions_taken: "Developed the widget and deployed it behind a feature flag. Enabled for 50% of new sign-ups.",
+  start_date: DateTime.now - 2.days,
+  status: :running,
+  goal: itg2_ig1_org1
+)
+
+# Experiment for Data-Driven Decisions LLC - "Develop HIPAA Compliant Module" Goal
+exp3 = Experiment.create!(
+  name: "Prototype Data Anonymization Service",
+  hypothesis: "Building a microservice for data anonymization will allow us to securely handle PHI and meet HIPAA requirements, unblocking our entry into the healthcare market.",
+  actions_taken: "Researched various anonymization techniques. Started development on a PoC using Python and Faker.",
+  start_date: DateTime.now,
+  status: :planned,
+  goal: itg1_ig1_org2
+)
+
+
+puts "Creating Measurements..."
+# Measurements for Experiment 1
+Measurement.create!(value: 120.50, measurement_date: DateTime.now - 6.days, notes: "Baseline measurement before caching.", kvm: kvm2_org1, experiment: exp1)
+Measurement.create!(value: 115.20, measurement_date: DateTime.now - 3.days, notes: "Post-deployment of CDN rules.", kvm: kvm2_org1, experiment: exp1)
+Measurement.create!(value: 110.75, measurement_date: DateTime.now - 1.day, notes: "After webpack changes.", kvm: kvm2_org1, experiment: exp1)
+
+# Measurements for Experiment 2
+Measurement.create!(value: 5.0, measurement_date: DateTime.now - 1.day, notes: "Adoption rate for control group.", kvm: kvm3_org1, experiment: exp2)
+Measurement.create!(value: 8.2, measurement_date: DateTime.now - 1.day, notes: "Adoption rate for test group with widget.", kvm: kvm3_org1, experiment: exp2)
+
+puts "Seed data created successfully!"

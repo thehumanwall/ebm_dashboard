@@ -1,0 +1,30 @@
+<nav class="bg-gray-800 text-white shadow-lg">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between h-16">
+      <div class="flex items-center">
+        <!-- Logo/Home link -->
+        <%= link_to root_path, class: "flex-shrink-0 flex items-center" do %>
+          <span class="text-xl font-bold">EBM Goals</span>
+        <% end %>
+        
+        <!-- Navigation Links -->
+        <div class="hidden md:ml-6 md:flex md:items-center md:space-x-4">
+          <%= link_to "Organizations", organizations_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 #{current_page?(organizations_path) ? 'bg-gray-900' : ''}" if defined?(organizations_path) %>
+          <%= link_to "Goals", goals_path, class: "px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700 #{current_page?(goals_path) ? 'bg-gray-900' : ''}" if defined?(goals_path) %>
+          <!-- Add more navigation links as needed -->
+        </div>
+      </div>
+      
+      <!-- Right side elements (like profile, logout) -->
+      <div class="flex items-center">
+        <div class="flex-shrink-0">
+          <% if authenticated? %>
+            <%= button_to "Sign Out", session_path(id: current_session.id), method: :delete, class: "text-white bg-indigo-700 hover:bg-indigo-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center" %>
+          <% else %>
+            <%= link_to "Log in", new_session_path, class: "px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-medium" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
