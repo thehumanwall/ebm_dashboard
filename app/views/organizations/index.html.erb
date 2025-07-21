@@ -5,23 +5,44 @@
     <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice"><%= notice %></p>
   <% end %>
 
-  <div class="flex justify-between items-center">
+  <div class="flex justify-between items-center mb-5">
     <h1 class="font-bold text-4xl">Organizations</h1>
     <%= link_to "New organization", new_organization_path, class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
   </div>
 
   <div id="organizations" class="min-w-full divide-y divide-gray-200 space-y-5">
     <% if @organizations.any? %>
-      <% @organizations.each do |organization| %>
-        <div class="flex flex-col sm:flex-row justify-between items-center pb-5 sm:pb-0">
-          <%= render organization %>
-          <div class="w-full sm:w-auto flex flex-col sm:flex-row space-x-2 space-y-2">
-            <%= link_to "Show", organization, class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= link_to "Edit", edit_organization_path(organization), class: "w-full sm:w-auto text-center rounded-md px-3.5 py-2.5 bg-gray-100 hover:bg-gray-50 inline-block font-medium" %>
-            <%= button_to "Destroy", organization, method: :delete, class: "w-full sm:w-auto rounded-md px-3.5 py-2.5 text-white bg-red-600 hover:bg-red-500 font-medium cursor-pointer", data: { turbo_confirm: "Are you sure?" } %>
+    <% @organizations.each do |organization| %>
+      <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+        <!-- First row: Name with link to SHOW page -->
+        <div class="p-4 bg-gray-50 border-b border-gray-200">
+          <%= link_to organization_path(organization), class: 'block' do %>
+            <h2 class="text-xl font-semibold text-blue-600 hover:text-blue-800 transition-colors duration-200">
+              <%= organization.name %>
+            </h2>
+          <% end %>
+        </div>
+        
+        <!-- Second row: Mission and Vision statements side by side -->
+        <div class="flex flex-col md:flex-row">
+          <!-- Mission Statement -->
+          <div class="p-4 md:w-1/2 md:border-r border-gray-200">
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Mission</h3>
+            <p class="text-gray-700 text-sm">
+              <%= organization.mission_statement %>
+            </p>
+          </div>
+          
+          <!-- Vision Statement -->
+          <div class="p-4 md:w-1/2 border-t md:border-t-0 border-gray-200">
+            <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider mb-2">Vision</h3>
+            <p class="text-gray-700 text-sm">
+              <%= organization.vision_statement %>
+            </p>
           </div>
         </div>
-      <% end %>
+      </div>
+    <% end %>
     <% else %>
       <p class="text-center my-10">No organizations found.</p>
     <% end %>
