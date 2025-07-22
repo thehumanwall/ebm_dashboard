@@ -12,6 +12,7 @@ Session.destroy_all
 User.destroy_all
 Organization.destroy_all
 
+
 puts "Creating Users..."
 user1 = User.create!(
   email_address: "test@test.com",
