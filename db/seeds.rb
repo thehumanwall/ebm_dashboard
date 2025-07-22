@@ -78,7 +78,7 @@ strategic_goals = [
     organization: organization,
     parent_goal_id: nil
   ),
-  
+
   Goal.create!(
     name: "Achieve Industry-Leading Customer Satisfaction",
     description: "Elevate our customer satisfaction metrics to become the benchmark in our industry",
@@ -88,7 +88,7 @@ strategic_goals = [
     organization: organization,
     parent_goal_id: nil
   ),
-  
+
   Goal.create!(
     name: "Establish Technological Leadership",
     description: "Position our company as the technological thought leader in our space through innovation and excellence",
@@ -330,7 +330,7 @@ experiments = [
     adaptation_summary: "Reprioritized roadmap to accelerate security enhancements based on early feedback.",
     goal: strategic_goals.first
   ),
-  
+
   # For an intermediate goal
   Experiment.create!(
     name: "Customer Success Team Reorganization",
@@ -343,7 +343,7 @@ experiments = [
     adaptation_summary: "Made the reorganization permanent and expanding the model to all customer segments.",
     goal: intermediate_goals[2]
   ),
-  
+
   # For a tactical goal
   Experiment.create!(
     name: "UX Simplification Test",
@@ -356,7 +356,7 @@ experiments = [
     adaptation_summary: "Approved simplified workflow for all customers in next release.",
     goal: tactical_goals[7]
   ),
-  
+
   # Another tactical experiment (running)
   Experiment.create!(
     name: "Partner Onboarding Program Test",
@@ -369,7 +369,7 @@ experiments = [
     adaptation_summary: "Adding more technical documentation based on early partner feedback.",
     goal: tactical_goals[3]
   ),
-  
+
   # A planned experiment
   Experiment.create!(
     name: "AI-Powered Support Assistant Pilot",
